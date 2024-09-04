@@ -25,3 +25,7 @@ interface Sale {
 interface SalesList {
     result : { records : Sale[] }
 }
+
+interface Search {
+    results : Building[];
+}

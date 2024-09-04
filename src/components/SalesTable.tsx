@@ -25,7 +25,7 @@ function SalesTable({ sales, flatType, page }: { sales: any, flatType: string, p
             </TableHeader>
             <TableBody>
                 {sales.filter((sale: any) => sale[0].flat_type.includes(flatType)).slice(page, page + 5).map((sale: [Sale, Building], index: number) => {
-                    sales.reverse()
+                    sales.reverse();
                     return (
                         <TableRow key={index}>
                             <TableCell className="font-medium">{sale[0].month}</TableCell>

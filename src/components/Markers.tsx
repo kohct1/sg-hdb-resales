@@ -17,7 +17,7 @@ import { useMap, useMapEvent } from "react-leaflet";
 const locationIcon = new L.Icon({ iconUrl: locationMarker.src, iconAnchor: [18, 36], popupAnchor: [0, -18] });
 const buildingIcon = new L.Icon({ iconUrl: buildingMarker.src, iconAnchor: [18, 36], popupAnchor: [0, -18] });
 
-function Markers() {
+function Markers({ search, setSearch }: { search: string, setSearch: (search: string) => void }) {
     const [selectedLocation, setSelectedLocation] = useState<LatLngTuple | null>(null);
     const [sales, setSales] = useState<SalesList>();
     const [buildings, setBuildings] = useState<Location | null>(null);
@@ -28,6 +28,21 @@ function Markers() {
     const [road, setRoad] = useState<string>("");
     const map = useMap();
     const oneMapAccessToken: string | undefined = process.env.NEXT_PUBLIC_ONEMAP_ACCESS_TOKEN;
+
+    async function searchLocation(search: string) {
+        const res = await fetch(`https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${search}&returnGeom=Y&getAddrDetails=Y&pageNum=1`);
+        const searchedLocation: Search = await res.json();
+        if (searchedLocation.results[0]) {
+            setSelectedLocation([searchedLocation.results[0].LATITUDE, searchedLocation.results[0].LONGITUDE]);
+        }
+    }
+
+    useEffect(() => {
+        if (search != "") {
+            searchLocation(search);
+            setSearch("");
+        }
+    }, [search])
 
     useMapEvent("click", (e) => {
         setSelectedLocation([e.latlng.lat, e.latlng.lng]);
@@ -176,7 +191,7 @@ function Markers() {
                 <Marker position={selectedLocation} icon={locationIcon}>
                     <Popup>{road}</Popup>
                 </Marker>
-                {Object.values(matches).map((match : any[]) => {
+                {Object.values(matches).map((match: any[]) => {
                     return (
                         <Marker key={match[0][0].block} position={[match[0][1].LATITUDE, match[0][1].LONGITUDE]} icon={buildingIcon}>
                             <Popup>
