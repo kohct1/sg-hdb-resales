@@ -16,6 +16,15 @@ import { useMap, useMapEvent } from "react-leaflet";
 
 const locationIcon = new L.Icon({ iconUrl: locationMarker.src, iconAnchor: [18, 36], popupAnchor: [0, -18] });
 const buildingIcon = new L.Icon({ iconUrl: buildingMarker.src, iconAnchor: [18, 36], popupAnchor: [0, -18] });
+var accessToken: string = "";
+
+async function getToken() {
+    const res: Response = await fetch("/api/token");
+    const token = await res.json();
+    accessToken = token.token.access_token;
+}
+
+getToken();
 
 function Markers({ search, setSearch }: { search: string, setSearch: (search: string) => void }) {
     const [selectedLocation, setSelectedLocation] = useState<LatLngTuple | null>(null);
@@ -27,7 +36,7 @@ function Markers({ search, setSearch }: { search: string, setSearch: (search: st
     const [page, setPage] = useState<number>(0);
     const [road, setRoad] = useState<string>("");
     const map = useMap();
-    const oneMapAccessToken: string | undefined = process.env.NEXT_PUBLIC_ONEMAP_ACCESS_TOKEN;
+    const oneMapAccessToken: string | undefined = accessToken;
 
     async function searchLocation(search: string) {
         const res = await fetch(`https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${search}&returnGeom=Y&getAddrDetails=Y&pageNum=1`);
