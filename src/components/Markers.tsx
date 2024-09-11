@@ -19,7 +19,9 @@ const buildingIcon = new L.Icon({ iconUrl: buildingMarker.src, iconAnchor: [18, 
 var accessToken: string = "";
 
 async function getToken() {
-    const res: Response = await fetch("/api/token");
+    const res: Response = await fetch("/api/token", {
+        method: "POST"
+    });
     const token = await res.json();
     accessToken = token.token.access_token;
 }
